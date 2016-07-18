@@ -68,10 +68,16 @@ def mymain(argv):
 	date = datetime.datetime.strptime('25' + today, '%d%m%Y')	
 	date_abrev = date.strftime('%Y%m')
 	date_abrev_opp = date.strftime('%m%Y')
+	month_abrev = date.strftime('%b')
+	month_abrev_low = month_abrev.lower()
 	year = date.strftime('%Y')
 	year_abrev = date.strftime('%y')
 	date_fut = date + datetime.timedelta(days=(335))    #advances date 11 months
 	date_fut_abrev = date_fut.strftime('%Y%m')
+	month_abrev_fut = date_fut.strftime('%b')
+	month_abrev_fut_lower = month_abrev_fut.lower()
+	year_fut = date_fut.strftime('%Y')
+
 	print date_abrev
 	print date_fut_abrev
 
@@ -93,31 +99,52 @@ def mymain(argv):
 	ano = str('ano' + year)
 	
 	cmd1 = 'use ' + file_rt
-	cmd0 = 'show data'
-	cmd2 = 'let sst_clm = TEMP[d=1, K=1]'
+
+	cmd = 'DEFINE AXIS/T=15-' + month_abrev_low + '-' + year + ':15-' + month_abrev_fut_lower + '-' + year_fut + ':1/npoint=11/UNIT=month tmonth'
+
+	#cmd0 = 'use climatological_axes'
+	#cmdA= 'cancel data climatological_axes'
+	cmda = 'let sst_clm = TEMP[d=1, K=1, gt=MONTH_IRREG@mod]'
+	#cmd2 = 'let sst_clm = TEMP[d=1, K=1]'
 	cmd3 = 'let sst_rt = TEMP[d=2, K=1]'
 	cmd4 = 'let ' + ano + ' = sst_rt - sst_clm'
-	
 	#cmd5 = 'let lat_obs = yt_ocean[d=1]'
 	#cmd6 = 'let lon_obs = xt_ocean[d=1]'
+	cmd9 = 'FRAME/FILE=test.png'
 
-
-	cmd7 = 'sha/lev=(-4,4,0.2) ' + ano + '[l=7:10@ave]'
-	cmd8 = 'go land'
-	cmd9 = 'FRAME/FILE=test3.png'
-	cmd10 = ''
-
-
+	(errval, errmsg) = pyferret.run(cmd)
+	#(errval, errmsg) = pyferret.run(cmdA)
+	(errval, errmsg) = pyferret.run(cmda)
 	(errval, errmsg) = pyferret.run(cmd1)
-	(errval, errmsg) = pyferret.run(cmd0)
-	(errval, errmsg) = pyferret.run(cmd2)
+	#(errval, errmsg) = pyferret.run(cmd0)
+	#(errval, errmsg) = pyferret.run(cmd2)
 	(errval, errmsg) = pyferret.run(cmd3)
 	(errval, errmsg) = pyferret.run(cmd4)
+
+	count = 0
+	month = 1
+
+	while (count < 6): 
+	
+		count = count + 1
+		
+
+		cmd6 = 'set viewport V' + str(count)
+		cmd7 = 'sha/lev=(-4,4,0.2) ' + ano + '[l=' + str(month) + ':' + str(month+1) + '@ave]'
+		cmd8 = 'go land'
+		cmd9 = 'FRAME/FILE=testloopaxis.png'
+
+		(errval, errmsg) = pyferret.run(cmd6)
+		(errval, errmsg) = pyferret.run(cmd7)
+		(errval, errmsg) = pyferret.run(cmd8)
+		(errval, errmsg) = pyferret.run(cmd9)
+
+		month = month + 1
+
 	#(errval, errmsg) = pyferret.run(cmd5)
 	#(errval, errmsg) = pyferret.run(cmd6)
-	(errval, errmsg) = pyferret.run(cmd7)
-	(errval, errmsg) = pyferret.run(cmd8)
 	(errval, errmsg) = pyferret.run(cmd9)
+
 
 def header():
 	
@@ -133,12 +160,12 @@ def header():
 	com2 = 'def sym print_opt $1"0"'
 	com3 = 'set mem/size=240'
 	com4 = 'use ' + file_clm
-	com5 = 'define VIEWPORT/xlim=0.,0.5/ylim=0.5,1.0 V1'
-	com6 = 'define VIEWPORT/xlim=0.,0.5/ylim=0.,0.5 V2'
-	com7 = 'define VIEWPORT/xlim=0.5,1.0/ylim=0.5,1.0 V3'
-	com8 = 'define VIEWPORT/xlim=0.5,1.0/ylim=0.,0.5 V4'
-	com9 = 'define VIEWPORT/xlim=1,1.5/ylim=0.5,1.0 V5'
-	com10 = 'define VIEWPORT/xlim=1,1.5/ylim=0.,0.5 V6'
+	com5 = 'define VIEWPORT/xlim=0.,0.33/ylim=0.5,1.0 V1'
+	com6 = 'define VIEWPORT/xlim=0.,0.33/ylim=0.,0.5 V2'
+	com7 = 'define VIEWPORT/xlim=0.33,0.66/ylim=0.5,1.0 V3'
+	com8 = 'define VIEWPORT/xlim=0.33,0.66/ylim=0.,0.5 V4'
+	com9 = 'define VIEWPORT/xlim=0.66,1/ylim=0.5,1.0 V5'
+	com10 = 'define VIEWPORT/xlim=0.66,1/ylim=0.,0.5 V6'
 
 	(errval, errmsg) = pyferret.run(com1)
 	(errval, errmsg) = pyferret.run(com2)
