@@ -82,7 +82,6 @@ def mymain(argv):
 	print date_fut_abrev
 
 	file_rt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/ocean_month/ts/monthly/1yr/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
-	print file_rt
 
 	d = '.'
 	child = p.Popen(["dmget", file_rt],cwd=d)
@@ -96,30 +95,10 @@ def mymain(argv):
 
 	header ()
 
-	ano = str('ano' + year)
-	
 	cmd1 = 'use ' + file_rt
 
-	cmd = 'DEFINE AXIS/T=15-' + month_abrev_low + '-' + year + ':15-' + month_abrev_fut_lower + '-' + year_fut + ':1/npoint=11/UNIT=month tmonth'
-
-	#cmd0 = 'use climatological_axes'
-	#cmdA= 'cancel data climatological_axes'
-	cmda = 'let sst_clm = TEMP[d=1, K=1, gt=MONTH_IRREG@mod]'
-	#cmd2 = 'let sst_clm = TEMP[d=1, K=1]'
-	cmd3 = 'let sst_rt = TEMP[d=2, K=1]'
-	cmd4 = 'let ' + ano + ' = sst_rt - sst_clm'
-	#cmd5 = 'let lat_obs = yt_ocean[d=1]'
-	#cmd6 = 'let lon_obs = xt_ocean[d=1]'
-	cmd9 = 'FRAME/FILE=test.png'
-
-	(errval, errmsg) = pyferret.run(cmd)
-	#(errval, errmsg) = pyferret.run(cmdA)
-	(errval, errmsg) = pyferret.run(cmda)
 	(errval, errmsg) = pyferret.run(cmd1)
-	#(errval, errmsg) = pyferret.run(cmd0)
-	#(errval, errmsg) = pyferret.run(cmd2)
-	(errval, errmsg) = pyferret.run(cmd3)
-	(errval, errmsg) = pyferret.run(cmd4)
+
 
 	count = 0
 	month = 1
@@ -130,7 +109,8 @@ def mymain(argv):
 		
 
 		cmd6 = 'set viewport V' + str(count)
-		cmd7 = 'sha/lev=(-4,4,0.2) ' + ano + '[l=' + str(month) + ':' + str(month+1) + '@ave]'
+		#cmd7 = 'sha/lev=(-4,4,0.2) (temp[d=2,L=' + str(month) + ':' + str(month+1) + '@ave], K=1] - temp[d=1,L=' + str(month) + ':' + str(month+1) + '@ave], K=1])'
+		cmd7 = 'SHA/LEVEL=(-4,4,0.20) (temp[d=2,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1]-temp[d=1,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1])'
 		cmd8 = 'go land'
 		cmd9 = 'FRAME/FILE=testloopaxis.png'
 
@@ -139,15 +119,10 @@ def mymain(argv):
 		(errval, errmsg) = pyferret.run(cmd8)
 		(errval, errmsg) = pyferret.run(cmd9)
 
-		month = month + 1
-
-	#(errval, errmsg) = pyferret.run(cmd5)
-	#(errval, errmsg) = pyferret.run(cmd6)
-	(errval, errmsg) = pyferret.run(cmd9)
+		month = month + 2
 
 
 def header():
-	
 	#the following clears data from previously running pyferrets, establishes base parameters, and loads ensemble data
 
 	file_clm = '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_0107/maproom/ocean_month_ens_01-12.198207-201206.temp.climo.nc'
@@ -155,11 +130,11 @@ def header():
 	d = '.'
 	child = p.Popen(["dmget", file_clm],cwd=d)
       	child.communicate()
-
+	
 	com1 = 'cancel data/all'
-	com2 = 'def sym print_opt $1"0"'
 	com3 = 'set mem/size=240'
 	com4 = 'use ' + file_clm
+	com45 = 'set WINDOW/SIZE=10'
 	com5 = 'define VIEWPORT/xlim=0.,0.33/ylim=0.5,1.0 V1'
 	com6 = 'define VIEWPORT/xlim=0.,0.33/ylim=0.,0.5 V2'
 	com7 = 'define VIEWPORT/xlim=0.33,0.66/ylim=0.5,1.0 V3'
@@ -168,17 +143,15 @@ def header():
 	com10 = 'define VIEWPORT/xlim=0.66,1/ylim=0.,0.5 V6'
 
 	(errval, errmsg) = pyferret.run(com1)
-	(errval, errmsg) = pyferret.run(com2)
 	(errval, errmsg) = pyferret.run(com3)
 	(errval, errmsg) = pyferret.run(com4)
+	(errval, errmsg) = pyferret.run(com45)
 	(errval, errmsg) = pyferret.run(com5)
 	(errval, errmsg) = pyferret.run(com6)
 	(errval, errmsg) = pyferret.run(com7)
 	(errval, errmsg) = pyferret.run(com8)
 	(errval, errmsg) = pyferret.run(com9)
 	(errval, errmsg) = pyferret.run(com10)
-
-
 
 if __name__=="__main__":
     mymain(sys.argv[1:])

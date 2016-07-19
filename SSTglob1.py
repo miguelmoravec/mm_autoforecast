@@ -89,32 +89,15 @@ def mymain(argv):
 		exit(1)
 
 	header ()
-
-	ano = str('ano' + year)
 	
 	cmd1 = 'use ' + file_rt
-	cmd0 = 'show data'
-	cmd2 = 'let sst_clm = TEMP[d=1, K=1]'
-	cmd3 = 'let sst_rt = TEMP[d=2, K=1]'
-	cmd4 = 'let ' + ano + ' = sst_rt - sst_clm'
-	
-	#cmd5 = 'let lat_obs = yt_ocean[d=1]'
-	#cmd6 = 'let lon_obs = xt_ocean[d=1]'
-
-
-	cmd7 = 'sha/lev=(-4,4,0.2) ' + ano + '[l=7:10@ave]'
+	cmd7 = 'SHA/LEVEL=(-4,4,0.20) (temp[d=2,L=1:2@AVE,K=1]-temp[d=1,L=1:2@AVE,K=1])'
 	cmd8 = 'go land'
 	cmd9 = 'FRAME/FILE=test3.png'
 	cmd10 = ''
 
 
 	(errval, errmsg) = pyferret.run(cmd1)
-	(errval, errmsg) = pyferret.run(cmd0)
-	(errval, errmsg) = pyferret.run(cmd2)
-	(errval, errmsg) = pyferret.run(cmd3)
-	(errval, errmsg) = pyferret.run(cmd4)
-	#(errval, errmsg) = pyferret.run(cmd5)
-	#(errval, errmsg) = pyferret.run(cmd6)
 	(errval, errmsg) = pyferret.run(cmd7)
 	(errval, errmsg) = pyferret.run(cmd8)
 	(errval, errmsg) = pyferret.run(cmd9)
@@ -128,11 +111,11 @@ def header():
 	d = '.'
 	child = p.Popen(["dmget", file_clm],cwd=d)
       	child.communicate()
-
+	
 	com1 = 'cancel data/all'
-	com2 = 'def sym print_opt $1"0"'
 	com3 = 'set mem/size=240'
 	com4 = 'use ' + file_clm
+	com45 = 'set WINDOW/SIZE=10'
 	com5 = 'define VIEWPORT/xlim=0.,0.5/ylim=0.5,1.0 V1'
 	com6 = 'define VIEWPORT/xlim=0.,0.5/ylim=0.,0.5 V2'
 	com7 = 'define VIEWPORT/xlim=0.5,1.0/ylim=0.5,1.0 V3'
@@ -141,9 +124,9 @@ def header():
 	com10 = 'define VIEWPORT/xlim=1,1.5/ylim=0.,0.5 V6'
 
 	(errval, errmsg) = pyferret.run(com1)
-	(errval, errmsg) = pyferret.run(com2)
 	(errval, errmsg) = pyferret.run(com3)
 	(errval, errmsg) = pyferret.run(com4)
+	(errval, errmsg) = pyferret.run(com45)
 	(errval, errmsg) = pyferret.run(com5)
 	(errval, errmsg) = pyferret.run(com6)
 	(errval, errmsg) = pyferret.run(com7)
