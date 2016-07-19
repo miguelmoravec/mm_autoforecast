@@ -68,12 +68,15 @@ def mymain(argv):
 	date = datetime.datetime.strptime('25' + today, '%d%m%Y')	
 	date_abrev = date.strftime('%Y%m')
 	date_abrev_opp = date.strftime('%m%Y')
+	month = date.strftime('%m')
 	month_abrev = date.strftime('%b')
 	month_abrev_low = month_abrev.lower()
 	year = date.strftime('%Y')
 	year_abrev = date.strftime('%y')
+
 	date_fut = date + datetime.timedelta(days=(335))    #advances date 11 months
 	date_fut_abrev = date_fut.strftime('%Y%m')
+	month_fut = date_fut.strftime('%m')
 	month_abrev_fut = date_fut.strftime('%b')
 	month_abrev_fut_lower = month_abrev_fut.lower()
 	year_fut = date_fut.strftime('%Y')
@@ -81,11 +84,50 @@ def mymain(argv):
 	print date_abrev
 	print date_fut_abrev
 
+	file_clm = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/ocean_month_ens_01-12.1982' + month + '-2012' + month_fut + '.temp.climo.nc')
+	file_clm_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/ocean_month_ens01-12.1982' + month + '-2012' + month_fut + '.temp.climo.nc')
 	file_rt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/ocean_month/ts/monthly/1yr/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
+	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01072016/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
 
-	d = '.'
-	child = p.Popen(["dmget", file_rt],cwd=d)
-      	child.communicate()
+	d = '.'	
+
+	if os.path.isfile(file_clm):
+		
+		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
+		child = p.Popen(["dmget", file_clm],cwd=d)
+      		child.communicate()
+		cmd = 'use ' + file_clm
+
+	elif os.path.isfile(file_clm_alt):
+		
+		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
+		child = p.Popen(["dmget", file_clm_alt],cwd=d)
+      		child.communicate()
+		cmd = 'use ' + file_clm_alt
+
+	else:
+		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
+		print "ERROR. Unable to locate historical data. Please ensure data files are located in their proper directories. See '-h'"
+		exit(1)
+
+	if os.path.isfile(file_rt):
+
+		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
+		child = p.Popen(["dmget", file_rt],cwd=d)
+	      	child.communicate()
+		cmd1 = 'use ' + file_rt
+
+	elif os.path.isfile(file_rt_alt):
+		
+		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
+		child = p.Popen(["dmget", file_rt_alt],cwd=d)
+      		child.communicate()
+		cmd1 = 'use ' + file_rt_alt
+
+	else:
+		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
+		print "ERROR. Unable to locate contemporary data. Please ensure data files are located in their proper directories. See '-h'"
+		exit(1)
 
 	#does pyferret things
 
@@ -95,10 +137,9 @@ def mymain(argv):
 
 	header ()
 
-	cmd1 = 'use ' + file_rt
 
+	(errval, errmsg) = pyferret.run(cmd)
 	(errval, errmsg) = pyferret.run(cmd1)
-
 
 	count = 0
 	month = 1
@@ -107,12 +148,10 @@ def mymain(argv):
 	
 		count = count + 1
 		
-
 		cmd6 = 'set viewport V' + str(count)
-		#cmd7 = 'sha/lev=(-4,4,0.2) (temp[d=2,L=' + str(month) + ':' + str(month+1) + '@ave], K=1] - temp[d=1,L=' + str(month) + ':' + str(month+1) + '@ave], K=1])'
-		cmd7 = 'SHA/LEVEL=(-4,4,0.20) (temp[d=2,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1]-temp[d=1,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1])'
+		cmd7 = 'SHA//NOLABEL/lev=(-inf)(-10,-5,1)(-5,5,0.5)(5,10,1)(inf)/PALETTE=blue_darkred (temp[d=2,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1]-temp[d=1,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1])'
 		cmd8 = 'go land'
-		cmd9 = 'FRAME/FILE=testloopaxis.png'
+		cmd9 = 'FRAME/FILE=testloopaxis_' + date_abrev + '.png'
 
 		(errval, errmsg) = pyferret.run(cmd6)
 		(errval, errmsg) = pyferret.run(cmd7)
@@ -125,27 +164,22 @@ def mymain(argv):
 def header():
 	#the following clears data from previously running pyferrets, establishes base parameters, and loads ensemble data
 
-	file_clm = '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_0107/maproom/ocean_month_ens_01-12.198207-201206.temp.climo.nc'
 
-	d = '.'
-	child = p.Popen(["dmget", file_clm],cwd=d)
-      	child.communicate()
 	
 	com1 = 'cancel data/all'
 	com3 = 'set mem/size=240'
-	com4 = 'use ' + file_clm
-	com45 = 'set WINDOW/SIZE=10'
-	com5 = 'define VIEWPORT/xlim=0.,0.33/ylim=0.5,1.0 V1'
-	com6 = 'define VIEWPORT/xlim=0.,0.33/ylim=0.,0.5 V2'
-	com7 = 'define VIEWPORT/xlim=0.33,0.66/ylim=0.5,1.0 V3'
-	com8 = 'define VIEWPORT/xlim=0.33,0.66/ylim=0.,0.5 V4'
-	com9 = 'define VIEWPORT/xlim=0.66,1/ylim=0.5,1.0 V5'
-	com10 = 'define VIEWPORT/xlim=0.66,1/ylim=0.,0.5 V6'
+	com4 = 'set WINDOW/SIZE=10'
+	com5 = 'define VIEWPORT/xlim=0.,0.4/ylim=0.5,1.0 V1'
+	com6 = 'define VIEWPORT/xlim=0.,0.4/ylim=0.,0.5 V2'
+	com7 = 'define VIEWPORT/xlim=0.3,0.7/ylim=0.5,1.0 V3'
+	com8 = 'define VIEWPORT/xlim=0.3,0.7/ylim=0.,0.5 V4'
+	com9 = 'define VIEWPORT/xlim=0.6,1/ylim=0.5,1.0 V5'
+	com10 = 'define VIEWPORT/xlim=0.6,1/ylim=0.,0.5 V6'
+
 
 	(errval, errmsg) = pyferret.run(com1)
 	(errval, errmsg) = pyferret.run(com3)
 	(errval, errmsg) = pyferret.run(com4)
-	(errval, errmsg) = pyferret.run(com45)
 	(errval, errmsg) = pyferret.run(com5)
 	(errval, errmsg) = pyferret.run(com6)
 	(errval, errmsg) = pyferret.run(com7)
