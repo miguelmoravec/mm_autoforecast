@@ -81,13 +81,15 @@ def mymain(argv):
 	month_abrev_fut_lower = month_abrev_fut.lower()
 	year_fut = date_fut.strftime('%Y')
 
-	print date_abrev
-	print date_fut_abrev
+	print 'Generating plots with available data for ', month, '/', year, '-', month_fut, '/', year_fut, '...'
 
+	#histotical climatology data
 	file_clm = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/ocean_month_ens_01-12.1982' + month + '-2012' + month_fut + '.temp.climo.nc')
 	file_clm_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/ocean_month_ens01-12.1982' + month + '-2012' + month_fut + '.temp.climo.nc')
+	
+	#contemporary data	
 	file_rt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/ocean_month/ts/monthly/1yr/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
-	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01072016/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
+	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01032016/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
 
 	d = '.'	
 
@@ -142,23 +144,42 @@ def mymain(argv):
 	(errval, errmsg) = pyferret.run(cmd1)
 
 	count = 0
-	month = 1
+	month_b = int(month)
+	month_c = 1
 
 	while (count < 6): 
 	
+		month_string = 'JFMAMJJASONDJFMAMJJASOND'
+		#print int(month)
+		month_combo = month_string[month_b-1]+month_string[month_b]+month_string[month_b+1]		
+
 		count = count + 1
 		
 		cmd6 = 'set viewport V' + str(count)
-		cmd7 = 'SHA//NOLABEL/lev=(-inf)(-10,-5,1)(-5,5,0.5)(5,10,1)(inf)/PALETTE=blue_darkred (temp[d=2,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1]-temp[d=1,L=' + str(month) + ':' + str(month+1) + '@AVE,K=1])'
+		cmd7 = 'SHADE/SET_UP/lev=(-inf)(-11,-5,3)(-5,5,0.5)(5,11,3)(inf)/PALETTE=blue_darkred (temp[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE,K=1]-temp[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE,K=1])'
+		cmd71 = 'GO unlabel 5'
+		cmd715 = 'PPL LABSET 0.15, 0.15, 0.15'
+		cmd72 = 'PPL TITLE Sea Surface Temperature (Deg C)'
+		#cmd70 = 'PPL LIST LABELS'
+		cmd73 = 'PPL SHADE'
 		cmd8 = 'go land'
+		cmd81 = 'ANNOTATE/NOUSER/XPOS=-0.5/YPOS=4.35 "'+month_combo+'"'
 		cmd9 = 'FRAME/FILE=testloopaxis_' + date_abrev + '.png'
 
 		(errval, errmsg) = pyferret.run(cmd6)
 		(errval, errmsg) = pyferret.run(cmd7)
+		#(errval, errmsg) = pyferret.run(cmd70)
+		(errval, errmsg) = pyferret.run(cmd71)
+		(errval, errmsg) = pyferret.run(cmd715)
+		(errval, errmsg) = pyferret.run(cmd72)
+		(errval, errmsg) = pyferret.run(cmd73)
 		(errval, errmsg) = pyferret.run(cmd8)
+		(errval, errmsg) = pyferret.run(cmd81)
 		(errval, errmsg) = pyferret.run(cmd9)
 
-		month = month + 2
+		month_c = month_c + 2
+		month_b = month_b + 2
+
 
 
 def header():
@@ -167,17 +188,19 @@ def header():
 
 	
 	com1 = 'cancel data/all'
+	com2 = 'set window/aspect=0.25'
 	com3 = 'set mem/size=240'
 	com4 = 'set WINDOW/SIZE=10'
-	com5 = 'define VIEWPORT/xlim=0.,0.4/ylim=0.5,1.0 V1'
-	com6 = 'define VIEWPORT/xlim=0.,0.4/ylim=0.,0.5 V2'
-	com7 = 'define VIEWPORT/xlim=0.3,0.7/ylim=0.5,1.0 V3'
-	com8 = 'define VIEWPORT/xlim=0.3,0.7/ylim=0.,0.5 V4'
-	com9 = 'define VIEWPORT/xlim=0.6,1/ylim=0.5,1.0 V5'
-	com10 = 'define VIEWPORT/xlim=0.6,1/ylim=0.,0.5 V6'
+	com5 = 'define VIEWPORT/xlim=0.,0.36/ylim=0.5,1.0 V1'
+	com6 = 'define VIEWPORT/xlim=0.,0.36/ylim=0.,0.5 V2'
+	com7 = 'define VIEWPORT/xlim=0.315,0.675/ylim=0.5,1.0 V3'
+	com8 = 'define VIEWPORT/xlim=0.315,0.675/ylim=0.,0.5 V4'
+	com9 = 'define VIEWPORT/xlim=0.63,1/ylim=0.5,1.0 V5'
+	com10 = 'define VIEWPORT/xlim=0.63,1/ylim=0.,0.5 V6'
 
 
 	(errval, errmsg) = pyferret.run(com1)
+	(errval, errmsg) = pyferret.run(com2)
 	(errval, errmsg) = pyferret.run(com3)
 	(errval, errmsg) = pyferret.run(com4)
 	(errval, errmsg) = pyferret.run(com5)
@@ -186,6 +209,7 @@ def header():
 	(errval, errmsg) = pyferret.run(com8)
 	(errval, errmsg) = pyferret.run(com9)
 	(errval, errmsg) = pyferret.run(com10)
+
 
 if __name__=="__main__":
     mymain(sys.argv[1:])
