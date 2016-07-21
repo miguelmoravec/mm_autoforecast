@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+#Written by Miguel M. Moravec. For questions please email miguel.moravec@vanderbilt.edu
+#This script automatically generates 6 forecast plots of Global SST anomalies by averaging model predictions every 3 months for 11 months suceeding a specified date and then comparing the averages to historical climatologies.
+#This script relies on the standard naming convention of historical SST NetCDF files in this archived directory: '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month (mm) + '/maproom/'
+#This script also relies on the contemporary data located in this archived directory: '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/pp_ensemble/ocean_month/ts/monthly/1yr/ OR just '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/'
+
 import subprocess as p
 import datetime
 import os
@@ -28,15 +33,15 @@ def mymain(argv):
 
 	for opt, arg in opts:
  		if opt == '-h': #help option
-        		print '\nThis script automatically generates plots of global SST anomalies for ######## \n'
+        		print '\nThis script automatically generates 6 forecast plots of Global SST anomalies by averaging model predictions every 3 months for 11 months suceeding a specified date and then comparing the averages to historical climatologies. \n'
 			print 'Options are as follows:'
 			print "'-h' launches this help text"
-			print "'-t' generates today's most recent plots"
-			print "'-d mmyyy' generates plots for ############## particular date i.e. '-d 072016' \n"
+			print "'-t' generates forecast plots using today's most recent data"
+			print "'-d mmyyy' generates forecast plots for the 11 months suceeding a particular date i.e. '-d 072016' \n"
 			print 'This script relies on the standard naming convention of SST NetCDF files in this directory:'
-			print '######################## \n'
+			print '"/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01" + month (mm) + "/maproom/" \n'
 			print 'This script also relies on the historical data located in this archived file:'
-			print '######################## \n'
+			print "'/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/pp_ensemble/ocean_month/ts/monthly/1yr/ \n\nAlternatively located here: \n'/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/' \n"
 			print 'Written by Miguel M. Moravec. For questions please email miguel.moravec@vanderbilt.edu \n'
         		sys.exit()
 
@@ -83,11 +88,11 @@ def mymain(argv):
 
 	print 'Generating plots with available data for ', month, '/', year, '-', month_fut, '/', year_fut, '...'
 
-	#histotical climatology data
+	#histotical climatology data location     	###NOTE: Exception for input date 012016, currently able to locate nc data
 	file_clm = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/ocean_month_ens_01-12.1982' + month + '-2012' + month_fut + '.temp.climo.nc')
 	file_clm_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/ocean_month_ens01-12.1982' + month + '-2012' + month_fut + '.temp.climo.nc')
 	
-	#contemporary data	
+	#contemporary data location			###NOTE: Exception for input date 032016, currently able to locate nc data
 	file_rt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/ocean_month/ts/monthly/1yr/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
 	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01032016/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
 
@@ -117,14 +122,14 @@ def mymain(argv):
 		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
 		child = p.Popen(["dmget", file_rt],cwd=d)
 	      	child.communicate()
-		cmd1 = 'use ' + file_rt
+		cmd0 = 'use ' + file_rt
 
 	elif os.path.isfile(file_rt_alt):
 		
 		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
 		child = p.Popen(["dmget", file_rt_alt],cwd=d)
       		child.communicate()
-		cmd1 = 'use ' + file_rt_alt
+		cmd0 = 'use ' + file_rt_alt
 
 	else:
 		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
@@ -133,62 +138,75 @@ def mymain(argv):
 
 	#does pyferret things
 
-	if ( not pyferret.start(quiet=True, journal=False) ): #####change last to true ', unmapped=True'
+	if ( not pyferret.start(quiet=True, journal=False, unmapped=True) ):
 		print "ERROR. Pyferret start failed. Exiting . . ."
 		exit(1)
 
 	header ()
 
-
 	(errval, errmsg) = pyferret.run(cmd)
-	(errval, errmsg) = pyferret.run(cmd1)
+	(errval, errmsg) = pyferret.run(cmd0)
 
+	#the following variables are set to allow the plot generation loop to run without modifying the date variables
 	count = 0
 	month_b = int(month)
 	month_c = 1
 
+	filename = 'SST_glob_anom_'+ str(date_abrev_opp) + '.png'
+
 	while (count < 6): 
-	
+
 		month_string = 'JFMAMJJASONDJFMAMJJASOND'
-		#print int(month)
 		month_combo = month_string[month_b-1]+month_string[month_b]+month_string[month_b+1]		
 
 		count = count + 1
 		
-		cmd6 = 'set viewport V' + str(count)
-		cmd7 = 'SHADE/SET_UP/lev=(-inf)(-11,-5,3)(-5,5,0.5)(5,11,3)(inf)/PALETTE=blue_darkred (temp[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE,K=1]-temp[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE,K=1])'
-		cmd71 = 'GO unlabel 5'
-		cmd715 = 'PPL LABSET 0.15, 0.15, 0.15'
-		cmd72 = 'PPL TITLE Sea Surface Temperature (Deg C)'
-		#cmd70 = 'PPL LIST LABELS'
-		cmd73 = 'PPL SHADE'
-		cmd8 = 'go land'
-		cmd81 = 'ANNOTATE/NOUSER/XPOS=-0.5/YPOS=4.35 "'+month_combo+'"'
-		cmd9 = 'FRAME/FILE=testloopaxis_' + date_abrev + '.png'
+		print 'Generating forecast plot ' + str(count)
+		
+		cmd1 = 'set viewport V' + str(count)
+		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-11,-5,3)(-5,5,0.5)(5,11,3)(inf)/PALETTE=blue_darkred (temp[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE,K=1]-temp[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE,K=1])'				#equation essentially subtracts contemporary temp 3month avg from historical temp 3month avg at depth 5m (k=1)
+		cmd3 = 'PPL LABSET 0.15, 0.15, 0'
+		cmd3alt = 'PPL LABSET 0.15, 0.15, 0.15'
+		cmd4 = 'GO unlabel 5'
+		cmd5 = 'PPL TITLE Sea Surface Temperature (Deg C)'
+		cmd6 = 'PPL SHADE'
+		cmd7 = 'go land'
+		cmd8 = 'ANNOTATE/NOUSER/XPOS=-0.5/YPOS=4.35 "' + month_combo + '"'
+		cmd9 = 'FRAME/FILE=' + filename
 
+		(errval, errmsg) = pyferret.run(cmd1)
+		(errval, errmsg) = pyferret.run(cmd2)
+
+		if count > 2:		#this if statement prevents the y axis label 'latitude' from overlapping on other plots after the first two are generated
+			(errval, errmsg) = pyferret.run(cmd3)
+		else:
+			(errval, errmsg) = pyferret.run(cmd3alt)	
+
+		(errval, errmsg) = pyferret.run(cmd4)
+		(errval, errmsg) = pyferret.run(cmd5)
 		(errval, errmsg) = pyferret.run(cmd6)
 		(errval, errmsg) = pyferret.run(cmd7)
-		#(errval, errmsg) = pyferret.run(cmd70)
-		(errval, errmsg) = pyferret.run(cmd71)
-		(errval, errmsg) = pyferret.run(cmd715)
-		(errval, errmsg) = pyferret.run(cmd72)
-		(errval, errmsg) = pyferret.run(cmd73)
 		(errval, errmsg) = pyferret.run(cmd8)
-		(errval, errmsg) = pyferret.run(cmd81)
 		(errval, errmsg) = pyferret.run(cmd9)
 
 		month_c = month_c + 2
 		month_b = month_b + 2
 
+	#allows file to save before checking if file exists	
+	from time import sleep
+	sleep(2)
+
+	if os.path.exists(filename):
+		print 'SUCCESS. Plot image file for Global SST anom for ', month, '/', year, '-', month_fut, '/', year_fut, ' is located in the local directory and is named: ', filename
+	else:
+		print "ERROR. No plots generated. Please ensure data files are located in their proper directories. See '-h'"
+		exit(1)
 
 
 def header():
-	#the following clears data from previously running pyferrets, establishes base parameters, and loads ensemble data
+	#the following clears data from previously running pyferrets and establishes base parameters
 
-
-	
 	com1 = 'cancel data/all'
-	com2 = 'set window/aspect=0.25'
 	com3 = 'set mem/size=240'
 	com4 = 'set WINDOW/SIZE=10'
 	com5 = 'define VIEWPORT/xlim=0.,0.36/ylim=0.5,1.0 V1'
@@ -200,7 +218,6 @@ def header():
 
 
 	(errval, errmsg) = pyferret.run(com1)
-	(errval, errmsg) = pyferret.run(com2)
 	(errval, errmsg) = pyferret.run(com3)
 	(errval, errmsg) = pyferret.run(com4)
 	(errval, errmsg) = pyferret.run(com5)
