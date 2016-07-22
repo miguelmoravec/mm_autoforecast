@@ -57,8 +57,8 @@ def mymain(argv):
 
 	if today == '':
 		print 'ERROR must select an option'
-		print "'-t' generates plots for months preceding today's date"
-		print "'-d mmyyy' generates plots for ################# preceding a particular date i.e. '-d 072016'"
+		print "'-t' generates plots for 11 months succeeding today's date"
+		print "'-d mmyyy' generates plots for 11 months succeeding a particular date i.e. '-d 072016'"
 		exit(1)
 
 	try:
@@ -95,7 +95,8 @@ def mymain(argv):
 	
 	#contemporary data location			###NOTE: Exception for input date 032016, currently able to locate nc data
 	file_rt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/ocean_month/ts/monthly/1yr/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
-	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01032016/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
+	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/ocean_month/ts/monthly/1yr/ocean_month.' + year + '02-' + date_fut_abrev + '.temp.nc')	
+	#the alternate file naming convention for variable 'file_rt_alt' is exclusively for getting data for 032016
 
 	d = '.'	
 
@@ -132,7 +133,7 @@ def mymain(argv):
 	      	child.communicate()
 		cmd0 = 'use ' + file_rt
 
-	elif os.path.isfile(file_rt_alt):
+	elif os.path.isfile(file_rt_alt) and month == '03':
 		
 		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
 		child = p.Popen(["dmget", file_rt_alt],cwd=d)
@@ -160,7 +161,7 @@ def mymain(argv):
 	month_b = int(month)
 	month_c = 1
 
-	filename = 'SST_glob_anom_3mm_'+ str(date_abrev) + '.png'
+	filename = 'SST_glob_anom_3mm_'+ str(date_abrev_opp) + '.png'
 
 	while (count < 6): 
 

@@ -3,7 +3,7 @@
 #Written by Miguel M. Moravec. For questions please email miguel.moravec@vanderbilt.edu
 #This script automatically generates 6 forecast plots of Global T ref anomalies by averaging model predictions monthly for 11 months succeeding a specified date and then comparing the averages to historical climatologies.
 #This script relies on the standard naming convention of historical T ref NetCDF files in this archived directory: '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month (mm) + '/maproom/'
-#This script also relies on the contemporary data located in this archived directory: '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/pp_ensemble/ocean_month/ts/monthly/1yr/ OR just '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/'
+#This script also relies on the contemporary data located in this archived directory: '/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/pp_ensemble/atmos/ts/monthly/1yr/
 
 import subprocess as p
 import datetime
@@ -41,7 +41,7 @@ def mymain(argv):
 			print 'This script relies on the standard naming convention of T ref NetCDF files in this directory:'
 			print '"/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01" + month (mm) + "/maproom/" \n'
 			print 'This script also relies on the historical data located in this archived file:'
-			print "'/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/pp_ensemble/ocean_month/ts/monthly/1yr/ \n\nAlternatively located here: \n'/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/' \n"
+			print "'/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp (mmYYYY) + '/pp_ensemble/atmos/ts/monthly/1yr/\n"
 			print 'Written by Miguel M. Moravec. For questions please email miguel.moravec@vanderbilt.edu \n'
         		sys.exit()
 
@@ -91,11 +91,15 @@ def mymain(argv):
 	#histotical climatology data location     	
 	file_clm = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens_01-12.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
 	file_clm_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens01-12.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
-	file_clm_alt2 = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens_01.1982' + month + '-201112.t_ref.nc')
+	file_clm_alt3 = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens01.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
+	file_clm_alt2 = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos_ens01-12.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
+	file_clm_alt4 = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos_ens01-12.1982' + month + '-201112.t_ref.climo.nc')
+	#the alternate file naming convention for variable 'file_rt_alt4' is exclusively for getting climatology data for timelines starting at l=1 (Jan)
 	
-	#contemporary data location			###NOTE: Exception for input date 032016, currently able to locate nc data
+	#contemporary data location			
 	file_rt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/atmos/ts/monthly/1yr/atmos.' + date_abrev + '-' + date_fut_abrev + '.t_ref.nc')
-	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01032016/ocean_month.' + date_abrev + '-' + date_fut_abrev + '.temp.nc')
+	file_rt_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + date_abrev_opp + '/pp_ensemble/atmos/ts/monthly/1yr/atmos.' + year + '02-' + date_fut_abrev + '.t_ref.nc')	
+	#the alternate file naming convention for variable 'file_rt_alt' is exclusively for getting data for 032016
 
 	d = '.'	
 
@@ -113,12 +117,26 @@ def mymain(argv):
       		child.communicate()
 		cmd = 'use ' + file_clm_alt
 
-	elif os.path.isfile(file_clm_alt2): #file:///archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_0101/maproom/ocean_month_ens_01.198201-201112.temp.nc
+	elif os.path.isfile(file_clm_alt2): 
 		
 		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
 		child = p.Popen(["dmget", file_clm_alt2],cwd=d)
       		child.communicate()
 		cmd = 'use ' + file_clm_alt2
+
+	elif os.path.isfile(file_clm_alt3): 
+		
+		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
+		child = p.Popen(["dmget", file_clm_alt3],cwd=d)
+      		child.communicate()
+		cmd = 'use ' + file_clm_alt3
+
+	elif os.path.isfile(file_clm_alt4  and month == '01'): 
+		
+		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
+		child = p.Popen(["dmget", file_clm_alt4],cwd=d)
+      		child.communicate()
+		cmd = 'use ' + file_clm_alt4
 
 	else:
 		print 'dmgetting archived data files (1/2). Please wait, this may take a while . . .'
@@ -132,7 +150,7 @@ def mymain(argv):
 	      	child.communicate()
 		cmd0 = 'use ' + file_rt
 
-	elif os.path.isfile(file_rt_alt):
+	elif os.path.isfile(file_rt_alt) and month == '03':
 		
 		print 'dmgetting archived data files (2/2). Please wait, this may take a while . . .'
 		child = p.Popen(["dmget", file_rt_alt],cwd=d)
@@ -160,7 +178,7 @@ def mymain(argv):
 	month_b = int(month)
 	month_c = 1
 
-	filename = 'SST_glob_anom_1mm_'+ str(date_abrev) + '.png'
+	filename = 'Tref_glob_anom_1mm_'+ str(date_abrev_opp) + '.png'
 
 	while (count < 6): 
 
@@ -172,7 +190,7 @@ def mymain(argv):
 		print 'Generating forecast plot ' + str(count)
 		
 		cmd1 = 'set viewport V' + str(count)
-		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-7,-3,1)(-3,3,0.5)(3,7,1)(inf)/PALETTE=blue_darkred (temp[d=2,L=' + str(month_c) + ',K=1]-temp[d=1,L=' + str(month_c) + ',K=1])'				#equation essentially subtracts contemporary temp from historical temp at depth 5m (k=1) for a given month (l)
+		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-4,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,4,1)(inf)/PALETTE=blue_darkred (t_ref[d=2,L=' + str(month_c) + ']-t_ref[d=1,L=' + str(month_c) + '])'				#equation essentially subtracts contemporary temp at depth 2m (T_ref) from historical temp for a given month (l)
 					#temp difference computed for every other month, in the interest of only producing 6 plots vice 12 
 		cmd3 = 'PPL LABSET 0.15, 0.15, 0'
 		cmd3alt = 'PPL LABSET 0.15, 0.15, 0.15'
@@ -180,7 +198,7 @@ def mymain(argv):
 		cmd4alt = 'GO unlabel 1'
 		cmd4alt1 = 'GO unlabel 2'
 		cmd4alt2 = 'GO unlabel 3'
-		cmd5 = 'PPL TITLE T Ref Anomalies (Deg C)'
+		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) at 2m Depth'
 		cmd6 = 'PPL SHADE'
 		cmd7 = 'go fland'
 		#cmd9 = 'ANNOTATE/NOUSER/XPOS=-0.1/YPOS=4.35 "' + month_combo + '"'
