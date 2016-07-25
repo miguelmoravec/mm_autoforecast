@@ -28,7 +28,7 @@ def mymain(argv):
 		opts, args = getopt.getopt(argv,"thd:",["input="])
 
 	except getopt.GetoptError:
-   		print "ERROR Invalid Syntax. See 'SSTanom.py -h'"
+   		print "ERROR Invalid Syntax. See 't_ref_glob1mm.py -h'"
 		sys.exit(2)
 
 	for opt, arg in opts:
@@ -88,7 +88,7 @@ def mymain(argv):
 
 	print 'Generating plots with available data for ', month, '/', year, '-', month_fut, '/', year_fut, '...'
 
-	#histotical climatology data location     	
+	#historical climatology data location     	
 	file_clm = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens_01-12.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
 	file_clm_alt = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens01-12.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
 	file_clm_alt3 = str('/archive/rgg/CM2.5/CM2.5_FLOR_B01_p1_ECDA_2.1Rv3.1_01' + month + '/maproom/atmos.ens01.1982' + month + '-2012' + month_fut + '.t_ref.climo.nc')
@@ -198,7 +198,7 @@ def mymain(argv):
 		cmd4alt = 'GO unlabel 1'
 		cmd4alt1 = 'GO unlabel 2'
 		cmd4alt2 = 'GO unlabel 3'
-		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) at 2m Depth'
+		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) Anomalies at 2m Depth'
 		cmd6 = 'PPL SHADE'
 		cmd7 = 'go fland'
 		#cmd9 = 'ANNOTATE/NOUSER/XPOS=-0.1/YPOS=4.35 "' + month_combo + '"'

@@ -28,7 +28,7 @@ def mymain(argv):
 		opts, args = getopt.getopt(argv,"thd:",["input="])
 
 	except getopt.GetoptError:
-   		print "ERROR Invalid Syntax. See 'SSTanom.py -h'"
+   		print "ERROR Invalid Syntax. See 'SSTglob1mm.py -h'"
 		sys.exit(2)
 
 	for opt, arg in opts:
