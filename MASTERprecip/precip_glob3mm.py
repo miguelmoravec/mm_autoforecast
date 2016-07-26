@@ -191,7 +191,8 @@ def mymain(argv):
 		print 'Generating forecast plot ' + str(count)
 		
 		cmd1 = 'set viewport V' + str(count)
-		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-10,-6,4)(-6,-2,2)(-2,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,2,1)(2,6,2)(6,10,4)(inf)/PALETTE=blue_darkred (86400*(precip[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE]-precip[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE]))'		#equation essentially subtracts contemporary precip 3month avg forecast from historical precip 3month avg 
+		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-10,-6,4)(-6,-2,2)(-2,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,2,1)(2,6,2)(6,10,4)(inf)/PALETTE=blue_darkred (86400*(precip[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE]-precip[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE]))'		
+		# above equation essentially subtracts contemporary precip 3month avg forecast from historical precip 3month avg 
 		cmd3 = 'PPL LABSET 0.15, 0.15, 0'
 		cmd3alt = 'PPL LABSET 0.15, 0.15, 0.15'
 		cmd4 = 'GO unlabel 4'
