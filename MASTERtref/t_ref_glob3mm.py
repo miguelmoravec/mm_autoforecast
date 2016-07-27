@@ -199,7 +199,7 @@ def mymain(argv):
 		cmd4alt2 = 'GO unlabel 3'
 		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) Anomalies at 2m Depth'
 		cmd6 = 'PPL SHADE'
-		cmd7 = 'go fland'
+		cmd7 = 'go land'
 		cmd9 = 'ANNOTATE/NOUSER/XPOS=-0.1/YPOS=4.35 "' + month_combo + '"'
 		cmd10 = 'FRAME/FILE=' + filename
 
