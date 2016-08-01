@@ -193,7 +193,7 @@ def mymain(argv):
 	month_b = int(month)
 	month_c = 1
 
-	filename = 'precip_glob_anom_1mm_'+ str(date_abrev_opp) + '.png'
+	filename = 'precip_glob_anom_1mm_'+ str(date_abrev) + '.png'
 
 	while (count < 6): 
 
@@ -205,7 +205,7 @@ def mymain(argv):
 		print 'Generating forecast plot ' + str(count)
 		
 		cmd1 = 'set viewport V' + str(count)
-		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-10,-6,4)(-6,-2,2)(-2,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,2,1)(2,6,2)(6,10,4)(inf)/PALETTE=blue_darkred (86400*(precip[d=2,L=' + str(month_c) + ']-precip[d=1,L=' + str(month_c) + ']))'				#equation essentially subtracts contemporary precip from historical precip for a given month (l)
+		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-10,-6,4)(-6,-2,2)(-2,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,2,1)(2,6,2)(6,10,4)(inf)/PALETTE=darkred_blue (86400*(precip[d=2,L=' + str(month_c) + ']-precip[d=1,L=' + str(month_c) + ']))'				#equation essentially subtracts contemporary precip from historical precip for a given month (l)
 					#temp difference computed for every other month, in the interest of only producing 6 plots vice 12 
 					#note that equation is multiplied by 86400 to convert data units to mm/day
 		cmd3 = 'PPL LABSET 0.15, 0.15, 0'

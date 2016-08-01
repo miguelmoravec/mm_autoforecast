@@ -178,7 +178,7 @@ def mymain(argv):
 	month_b = int(month)
 	month_c = 1
 
-	filename = 'Tref_glob_anom_3mm_'+ str(date_abrev_opp) + '.png'
+	filename = 'Tref_glob_anom_3mm_'+ str(date_abrev) + '.png'
 
 	while (count < 6): 
 
