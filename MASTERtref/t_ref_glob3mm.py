@@ -190,14 +190,14 @@ def mymain(argv):
 		print 'Generating forecast plot ' + str(count)
 		
 		cmd1 = 'set viewport V' + str(count)
-		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-4,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,4,1)(inf)/PALETTE=blue_darkred (t_ref[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE]-t_ref[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE])'		#equation essentially subtracts contemporary temp at depth 2m (T_ref) 3month avg from historical Tref 3month avg 
+		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-4,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,4,1)(inf)/PALETTE=blue_darkred (t_ref[d=2,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE]-t_ref[d=1,L=' + str(month_c) + ':' + str(month_c+1) + '@AVE])'		#equation essentially subtracts contemporary temp at 2m (T_ref) 3month avg from historical Tref 3month avg 
 		cmd3 = 'PPL LABSET 0.15, 0.15, 0'
 		cmd3alt = 'PPL LABSET 0.15, 0.15, 0.15'
 		cmd4 = 'GO unlabel 4'
 		cmd4alt = 'GO unlabel 1'
 		cmd4alt1 = 'GO unlabel 2'
 		cmd4alt2 = 'GO unlabel 3'
-		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) Anomalies at 2m Depth'
+		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) Anomalies at 2m'
 		cmd6 = 'PPL SHADE'
 		cmd7 = 'go land'
 		cmd9 = 'ANNOTATE/NOUSER/XPOS=-0.1/YPOS=4.35 "' + month_combo + '"'

@@ -190,7 +190,7 @@ def mymain(argv):
 		print 'Generating forecast plot ' + str(count)
 		
 		cmd1 = 'set viewport V' + str(count)
-		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-4,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,4,1)(inf)/PALETTE=blue_darkred (t_ref[d=2,L=' + str(month_c) + ']-t_ref[d=1,L=' + str(month_c) + '])'				#equation essentially subtracts contemporary temp at depth 2m (T_ref) from historical temp for a given month (l)
+		cmd2 = 'SHADE/SET_UP/lev=(-inf)(-4,-1,1)(-1,-0.5,0.5)(-0.5,0.5,0.25)(0.5,1,0.5)(1,4,1)(inf)/PALETTE=blue_darkred (t_ref[d=2,L=' + str(month_c) + ']-t_ref[d=1,L=' + str(month_c) + '])'				#equation essentially subtracts contemporary temp at 2m (T_ref) from historical temp for a given month (l)
 					#temp difference computed for every other month, in the interest of only producing 6 plots vice 12 
 		cmd3 = 'PPL LABSET 0.15, 0.15, 0'
 		cmd3alt = 'PPL LABSET 0.15, 0.15, 0.15'
@@ -198,7 +198,7 @@ def mymain(argv):
 		cmd4alt = 'GO unlabel 1'
 		cmd4alt1 = 'GO unlabel 2'
 		cmd4alt2 = 'GO unlabel 3'
-		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) Anomalies at 2m Depth'
+		cmd5 = 'PPL TITLE T_r_e_f : Temp (Deg C) Anomalies at 2m'
 		cmd6 = 'PPL SHADE'
 		cmd7 = 'go land'
 		#cmd9 = 'ANNOTATE/NOUSER/XPOS=-0.1/YPOS=4.35 "' + month_combo + '"'
